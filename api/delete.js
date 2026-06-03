@@ -1,6 +1,6 @@
 import { put, get, del, list } from '@vercel/blob';
 
-export const config = { runtime: 'nodejs18' };
+export const config = { runtime: 'nodejs' };
 
 export default async function handler(req, res) {
   const adminPw = process.env.ADMIN_PASSWORD || 'nadira123';
