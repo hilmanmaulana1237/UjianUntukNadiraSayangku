@@ -196,22 +196,27 @@ function checkAuth() {
   const pw = prompt('Masukkan password admin:');
   if (!pw) return;
 
-  // Test password by making a quick API call
   fetch(`/api/results?password=${encodeURIComponent(pw)}`)
     .then(res => {
-      if (!res.ok) throw new Error('Wrong password');
+      if (res.status === 401) throw new Error('Password salah!');
+      if (!res.ok) throw new Error('Server error (HTTP ' + res.status + '). Cek Vercel Blob sudah di-enable?');
+      return res.json();
+    })
+    .then(() => {
       adminPassword = pw;
       document.getElementById('authScreen').style.display = 'none';
       document.getElementById('dashboardScreen').style.display = 'block';
       document.getElementById('cloudStatus').textContent = '☁️ Cloud • Vercel Blob';
       loadResults();
     })
-    .catch(() => {
+    .catch((err) => {
+      const isWrongPw = err.message.includes('Password salah');
       document.body.innerHTML = `
         <div class="container" style="text-align:center;">
           <div class="card">
-            <h2 style="color:#e91e63;">❌ Akses Ditolak</h2>
-            <p style="color:#666;margin:16px 0;">Password salah! Coba lagi ya 😊</p>
+            <h2 style="color:#e91e63;">${isWrongPw ? '❌ Akses Ditolak' : '⚠️ Error Server'}</h2>
+            <p style="color:#666;margin:16px 0;">${err.message}</p>
+            ${isWrongPw ? '' : '<p style="font-size:13px;color:#e91e63;">💡 Pastikan Vercel Blob sudah di-enable: <strong>Vercel Dashboard → Storage → Create Blob</strong></p>'}
             <button class="btn btn-primary" onclick="location.reload()">Coba Lagi</button>
           </div>
         </div>
