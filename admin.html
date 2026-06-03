@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Quiz PJOK 💕</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>">
+</head>
+<body>
+  <div class="hearts-bg"></div>
+
+  <!-- Auth Screen -->
+  <div class="container" id="authScreen">
+    <div class="card" style="text-align:center;max-width:400px;">
+      <div style="font-size:64px;margin-bottom:16px;">👑</div>
+      <h2 style="font-size:24px;font-weight:800;color:#1a1a2e;margin-bottom:8px;">Admin Dashboard</h2>
+      <p style="color:#7f8c8d;margin-bottom:24px;">Masuk untuk melihat hasil quiz Nadira</p>
+      <button class="btn btn-primary" onclick="checkAuth()">Masuk Dashboard</button>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="container" id="dashboardScreen" style="display:none;padding-top:40px;">
+    <div style="width:100%;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+        <div>
+          <h1 style="font-size:28px;font-weight:800;background:linear-gradient(135deg,#e91e63,#9c27b0);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+            👑 Dashboard Admin
+          </h1>
+          <p style="color:#7f8c8d;font-size:14px;">Pantau hasil belajar Nadira 💕</p>
+          <span id="cloudStatus" style="font-size:11px;color:#95a5a6;">☁️ Menghubungkan...</span>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-secondary" style="width:auto;padding:10px 20px;font-size:13px;" onclick="window.location.href='index.html'">🏠 Quiz</button>
+          <button class="btn btn-secondary" style="width:auto;padding:10px 20px;font-size:13px;" onclick="exportData()">📥 Export</button>
+          <button class="btn btn-danger" style="width:auto;padding:10px 20px;font-size:13px;background:linear-gradient(135deg,#f44336,#d32f2f);color:white;border:none;border-radius:14px;font-weight:600;font-family:inherit;cursor:pointer;" onclick="clearAllResults()">🗑 Hapus Semua</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📝</div>
+          <div class="stat-value" id="totalAttempts">0</div>
+          <div class="stat-label">Total Pengerjaan</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📊</div>
+          <div class="stat-value" id="avgScore">0%</div>
+          <div class="stat-label">Rata-rata Nilai</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🏆</div>
+          <div class="stat-value" id="bestScore">0%</div>
+          <div class="stat-label">Nilai Tertinggi</div>
+        </div>
+      </div>
+
+      <!-- Filter -->
+      <div id="filterContainer" style="margin-bottom:16px;"></div>
+
+      <!-- Results -->
+      <div id="resultsContainer"></div>
+    </div>
+  </div>
+
+  <style>
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(233,30,99,0.08);
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .stat-icon { font-size: 28px; margin-bottom: 8px; }
+    .stat-value { font-size: 28px; font-weight: 800; background: linear-gradient(135deg,#e91e63,#9c27b0); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .stat-label { font-size: 13px; color: #7f8c8d; margin-top: 4px; }
+
+    .result-card {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.3);
+      box-shadow: 0 4px 20px rgba(233,30,99,0.08);
+      transition: all 0.2s ease;
+    }
+
+    .result-card.pass { border-left: 4px solid #4caf50; }
+    .result-card.fail { border-left: 4px solid #f44336; }
+
+    .result-card-header {
+      padding: 16px 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .result-card-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .result-name { font-weight: 700; color: #1a1a2e; font-size: 15px; }
+    .result-date { font-size: 12px; color: #95a5a6; }
+
+    .result-card-stats {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .result-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .badge-pass { background: #e8f5e9; color: #2e7d32; }
+    .badge-fail { background: #ffebee; color: #c62828; }
+
+    .result-score { font-size: 14px; color: #7f8c8d; font-weight: 600; }
+    .expand-icon { color: #bdc3c7; font-size: 12px; }
+
+    .result-card-detail {
+      padding: 0 20px 16px;
+      border-top: 1px solid #f3e5f5;
+      padding-top: 12px;
+    }
+
+    .detail-topics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .topic-chip {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .topic-chip.pass { background: #e8f5e9; color: #2e7d32; }
+    .topic-chip.fail { background: #ffebee; color: #c62828; }
+
+    .chip-name { margin-right: 6px; }
+
+    .detail-answers h4 {
+      font-size: 13px;
+      color: #7b1fa2;
+      margin-bottom: 8px;
+    }
+
+    .answer-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .answer-item.correct { background: #e8f5e9; }
+    .answer-item.wrong { background: #ffebee; }
+
+    .answer-num { font-weight: 600; color: #666; min-width: 24px; }
+    .answer-text { flex: 1; color: #2c3e50; }
+    .answer-status { font-size: 14px; }
+
+    .filter-select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #f3e5f5;
+      border-radius: 12px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      background: white;
+      cursor: pointer;
+    }
+
+    .filter-select:focus { border-color: #e91e63; }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #f44336, #d32f2f) !important;
+      color: white !important;
+      border: none !important;
+    }
+
+    .btn-sm {
+      width: auto;
+      padding: 8px 16px;
+      font-size: 12px;
+      border-radius: 10px;
+      margin-top: 8px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      background: rgba(255,255,255,0.85);
+      border-radius: 16px;
+    }
+
+    .empty-state .empty-icon { font-size: 64px; margin-bottom: 16px; }
+    .empty-state h3 { color: #1a1a2e; margin-bottom: 8px; }
+    .empty-state p { color: #95a5a6; }
+
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .result-card-header { flex-direction: column; align-items: flex-start; }
+      .result-card-stats { width: 100%; justify-content: space-between; }
+    }
+  </style>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>
