@@ -29,7 +29,7 @@ async function loadResults() {
 
   let results = [];
   try {
-    results = await apiCall(`results?password=${encodeURIComponent(adminPassword)}`);
+    results = await apiCall(`gist?password=${encodeURIComponent(adminPassword)}`);
   } catch (e) {
     container.innerHTML = `
       <div class="empty-state" style="border:2px solid #ffcdd2;">
@@ -172,7 +172,7 @@ function changeFilter(value) {
 async function deleteResult(id) {
   if (!confirm('Hapus hasil ini dari cloud?')) return;
   try {
-    await apiCall(`delete?password=${encodeURIComponent(adminPassword)}&id=${id}`);
+    await apiCall(`gist?password=${encodeURIComponent(adminPassword)}&id=${id}`);
     if (expandedId === id) expandedId = null;
     loadResults();
   } catch (e) {
@@ -184,7 +184,7 @@ async function clearAllResults() {
   if (!confirm('Hapus SEMUA hasil quiz dari cloud? Data tidak bisa dikembalikan!')) return;
   if (!confirm('Yakin banget nih?')) return;
   try {
-    await apiCall(`delete?password=${encodeURIComponent(adminPassword)}&clear=true`);
+    await apiCall(`gist?password=${encodeURIComponent(adminPassword)}&clear=true`);
     expandedId = null;
     loadResults();
   } catch (e) {
@@ -196,7 +196,7 @@ function checkAuth() {
   const pw = prompt('Masukkan password admin:');
   if (!pw) return;
 
-  fetch(`/api/results?password=${encodeURIComponent(pw)}`)
+  fetch(`/api/gist?password=${encodeURIComponent(pw)}`)
     .then(res => {
       if (res.status === 401) throw new Error('Password salah!');
       if (!res.ok) throw new Error('Server error (HTTP ' + res.status + '). Cek Vercel Blob sudah di-enable?');
@@ -226,7 +226,7 @@ function checkAuth() {
 
 async function exportData() {
   try {
-    const results = await apiCall(`results?password=${encodeURIComponent(adminPassword)}`);
+    const results = await apiCall(`gist?password=${encodeURIComponent(adminPassword)}`);
     if (!results || results.length === 0) {
       alert('Belum ada data untuk di-export!');
       return;

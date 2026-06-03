@@ -597,11 +597,11 @@ function saveResult(name, score, total, percentage, answers) {
   localResults.push(result);
   localStorage.setItem('pjokQuizResults', JSON.stringify(localResults));
 
-  // Save to cloud (Vercel Blob) — cross-device
-  fetch('/api/save', {
+  // Save to cloud (GitHub Gist) — cross-device
+  fetch('/api/gist', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ result })
+    body: JSON.stringify(result)
   }).catch(() => {
     console.log('Cloud save unavailable (offline or first deploy)');
   });
