@@ -1,7 +1,5 @@
 import { get, list } from '@vercel/blob';
 
-export const config = { runtime: 'nodejs' };
-
 export default async function handler(req, res) {
   const adminPw = process.env.ADMIN_PASSWORD || 'nadira123';
   const { password } = req.query;
