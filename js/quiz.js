@@ -183,7 +183,7 @@ function showQuestion() {
       <div class="quiz-header">
         <div>
           <span class="progress-text">Soal ${currentIndex + 1} dari ${total}</span>
-          ${streak >= 3 ? `<span class="streak-badge">🔥 ${strex}x</span>` : ''}
+          ${streak >= 3 ? `<span class="streak-badge">🔥 ${streak}x</span>` : ''}
         </div>
         ${q.topic ? `<span class="topic-label">${isRomantic ? '💕 Romantis' : q.topic}</span>` : ''}
       </div>

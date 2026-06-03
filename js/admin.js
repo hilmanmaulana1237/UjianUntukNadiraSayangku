@@ -172,7 +172,7 @@ function changeFilter(value) {
 async function deleteResult(id) {
   if (!confirm('Hapus hasil ini dari cloud?')) return;
   try {
-    await apiCall(`gist?password=${encodeURIComponent(adminPassword)}&id=${id}`);
+    await apiCall(`gist?password=${encodeURIComponent(adminPassword)}&id=${id}`, { method: 'DELETE' });
     if (expandedId === id) expandedId = null;
     loadResults();
   } catch (e) {
@@ -184,7 +184,7 @@ async function clearAllResults() {
   if (!confirm('Hapus SEMUA hasil quiz dari cloud? Data tidak bisa dikembalikan!')) return;
   if (!confirm('Yakin banget nih?')) return;
   try {
-    await apiCall(`gist?password=${encodeURIComponent(adminPassword)}&clear=true`);
+    await apiCall(`gist?password=${encodeURIComponent(adminPassword)}&clear=true`, { method: 'DELETE' });
     expandedId = null;
     loadResults();
   } catch (e) {
